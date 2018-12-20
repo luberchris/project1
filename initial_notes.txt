@@ -1,20 +1,19 @@
 Recipes Application
 
-Meal planner
-Shopping planner
-Recipes
+Recipe search and aggregator tool
 
 Features:
 Search for recipes
-Add custom recipes
+Save favorite recipes
+Generate shopping list from recipe ingredients
 
 Target audience:
-Dieters
+Home cooks and meal planners
 
 Problem:
 Recipes online are unorganized
+Generating shopping lists takes up time
 Removing unnecessary information / ads
-Dietary limitations
 
 Primary goal:
 Streamline the meal-planning and shopping process
