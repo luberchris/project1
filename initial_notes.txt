@@ -1,0 +1,20 @@
+Recipes Application
+
+Meal planner
+Shopping planner
+Recipes
+
+Features:
+Search for recipes
+Add custom recipes
+
+Target audience:
+Dieters
+
+Problem:
+Recipes online are unorganized
+Removing unnecessary information / ads
+Dietary limitations
+
+Primary goal:
+Streamline the meal-planning and shopping process
