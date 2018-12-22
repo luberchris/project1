@@ -1,5 +1,6 @@
 Recipes Application
 
+
 Recipe search and aggregator tool
 
 Features:
@@ -30,3 +31,4 @@ Left column has a menu with three hyperlink tabs - Home, my recipes, and my shop
     - The shopping list tab will have list ingredents from all of the recipes that the user has saved to "my recipes". Maybe it should have an on click button to generate a printer friendly shopping list? 
 
 Top right - set up login button in top right of web page that will prompt user to create an account with email verification. 
+
