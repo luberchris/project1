@@ -1,14 +1,3 @@
-Recipes Application
-
-
-Recipe search and aggregator tool
-
-Features:
-Search for recipes
-Save favorite recipes
-Generate shopping list from recipe ingredients
-
-Target audience:
 Home cooks and meal planners
 
 Problem:

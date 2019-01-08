@@ -7,15 +7,22 @@
     <title>Pantry</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"> 
+    <link rel="stylesheet" type="text/css" href="./assets/css/style.css">
+    <link rel="stylesheet"   href="https://fonts.googleapis.com/css?family=Charm">
     <script src="https://www.gstatic.com/firebasejs/5.7.0/firebase.js"></script>
     <script type="text/javascript" src="assets/javascript/app.js"></script>
 
 </head>
-  <body>
-   <div class='wrapper' id='main-container'>
+<body class="text-center">
+  <div class="container d-flex w-100 h-100 p-3 mx-auto flex-column">
+    <header class="masthead mb-auto">
+        <nav class="navbar">
+            <h1 class="masthead-brand">
+              <a class="masthead-brand" href="./index.html">Pantry</a>
+            </h1>
+          </nav>
 
-    <nav class="navbar"> 
-    <a class="navbar-brand" href="./index.html">Pantry</a>
     <ul class="navbar">
         <li class="nav-item active">
           <a class="nav-link" href="./index.html">Home<span class="sr-only">(current)</span></a>
@@ -27,7 +34,9 @@
           <a class="nav-link" href="./saved-recipes.html">Saved Recipes</a>
         </li>
       </ul>
-    </nav>
+      </nav>
+      </div>
+  `</header>
 
     <div class='col' id='search'>
 
