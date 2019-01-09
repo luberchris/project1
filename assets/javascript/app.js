@@ -42,8 +42,9 @@ $(document).on("click", "#submitButton", function() {
         var resultImgs = result.images[0].hostedMediumUrl;
         var recipeURL = result.source.sourceRecipeUrl;
         var recipeName = result.name;
+        var ingredients = result.ingredientLines;
 
-        var card = $("<div class ='card'>");
+        var card = $("<div class ='card pt-4'>");
 
         var ingredImg = $("<img class='card-image-top' alt='card Image Cap'>");
 
@@ -59,9 +60,19 @@ $(document).on("click", "#submitButton", function() {
 
         cardTitle.text(recipeName);
 
-        cardBody.append(cardTitle)
+        cardBody.append(cardTitle);
 
-        var link = $("<a class='btn btn-primary'> Go to Recipe </a>");
+        var cardText = $("<p class='card-text'></p>")
+
+        var cardTextSmall = $("<small class='text-muted'>Last updated 3 mins ago</small>")
+
+        cardText.append(cardTextSmall);
+
+        cardTextSmall.text(ingredients);
+
+        cardBody.append(cardText);
+
+        var link = $("<a class='btn btn-outline-danger'> Go to Recipe </a>");
         $(link).attr("href", recipeURL);
                 
         cardBody.append(link);
