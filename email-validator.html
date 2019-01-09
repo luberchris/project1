@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Pantry Signup!</title>
+  <style type="text/css">
+    button,
+    div,
+    form,
+    input {
+      margin: 10px;
+    }
+  </style>
+ 
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Sign Up for Pantry!</h1>
+       <!-- displays error message if user submits invalid email-->
+        <div id="email-invalid"></div>
+    
+        <form id="email-form">
+          <label for="email-input">Add your email here!</label>
+          <input type="text" id="email-input"><br>
+          <!-- submitted email runs click function -->
+          <input id="add-email" type="submit" value="Submit">
+        </form>
+        
+
+  
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+      var access_key = '6b78fa23cc5f74ceb6bd5d5b42e5a455';
+      var email_address = '';
+
+      // This function handles events where one button is clicked
+      $("#add-email").on("click", function(event) {
+        // Preventing the buttons default behavior when clicked (which is submitting a form)
+        event.preventDefault();
+        // This line grabs the input from the textbox
+        var email_address = $("#email-input").val().trim();
+         // verify email address via AJAX call
+        $.ajax({
+        url: 'http://apilayer.net/api/check?access_key=' + access_key + '&email=' + email_address,   
+        dataType: 'jsonp',
+        success: function(json) {
+
+        // Access and use your preferred validation result objects
+        console.log(json.format_valid);
+        console.log(json.smtp_check);
+        console.log(json.score);
+
+        //if email score is low, we will print and error message to the dom
+        if (json.score < .7) {
+          $("#email-invalid").empty();
+          $("#email-invalid").text("Invalid email address, please enter again");
+
+       }
+       // if email score is sufficient, we redirect user to our actual app homepage
+       else {
+        $(location).attr('href', 'http://stackoverflow.com');
+      }
+
+    }
+    
+    
+
+    })
+
+      });
+
+     
+    
+
+
+    
+    ;
+    </script>
+  </div>
+</body>
+
+</html>

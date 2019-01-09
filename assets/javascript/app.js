@@ -1,3 +1,6 @@
+//
+//
+//
 $(document).on("click", "#submitButton", function() {
   event.preventDefault();
 
@@ -33,6 +36,7 @@ $(document).on("click", "#submitButton", function() {
       $.ajax({
         url: idURL,
         method: "GET"
+
       }).then(function(result) {
         console.log(result);
 
@@ -57,6 +61,7 @@ $(document).on("click", "#submitButton", function() {
 
     //  var recipeResponse = JSON.parse(response);
     //  console.log(recipeResponse.recipe.f2f_url);
+
 
     //  $("#ingredhere").html(recipeResponse.recipe.f2f_url);
     //   console.log(response);
@@ -85,5 +90,7 @@ $(document).on("click", "#submitButton", function() {
     //     rUrl: rUrl,
     //     dateAdded: firebase.database.ServerValue.TIMESTAMP
     //   });
+
   });
 });
+
