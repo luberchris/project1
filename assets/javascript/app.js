@@ -44,7 +44,7 @@ $(document).on("click", "#submitButton", function() {
         var recipeName = result.name;
         var ingredients = result.ingredientLines;
 
-        var card = $("<div class ='card pt-4'>");
+        var card = $("<div class ='card border-danger bg-light pt-4'>");
 
         var ingredImg = $("<img class='card-image-top' alt='card Image Cap'>");
 
@@ -64,13 +64,13 @@ $(document).on("click", "#submitButton", function() {
 
         var cardText = $("<p class='card-text'></p>")
 
+        cardBody.append(cardText);
+
         var cardTextSmall = $("<small class='text-muted'>Last updated 3 mins ago</small>")
 
         cardText.append(cardTextSmall);
 
         cardTextSmall.text(ingredients);
-
-        cardBody.append(cardText);
 
         var link = $("<a class='btn btn-outline-danger'> Go to Recipe </a>");
         $(link).attr("href", recipeURL);
