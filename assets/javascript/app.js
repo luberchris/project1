@@ -1,6 +1,13 @@
+//
+//
+//
+
+function addToFavorites(element){
+  console.log(element.id);
+}
+
 $(document).on("click", "#submitButton", function() {
   event.preventDefault();
-
 
   var params = $("#params")
     .val()
@@ -8,11 +15,10 @@ $(document).on("click", "#submitButton", function() {
     .replace(/ /g, "+");
   console.log(params);
 
-
   var queryURL =
     "https://api.yummly.com/v1/api/recipes?_app_id=30ea9a46&_app_key=3d03668731b2112fff8aac21cb03c4ca&q=" +
     params +
-    "&requirePictures=true&maxResult=9";
+    "&requirePictures=true&maxResult=9"; // Add pagination '&start=###'
 
   console.log(queryURL);
 
@@ -25,7 +31,7 @@ $(document).on("click", "#submitButton", function() {
     for (var i = 0; i < response.matches.length; i++) {
       var recipeKey = response.matches[i].id;
 
-      console.log(recipeKey);
+      
 
       var idURL =
         "https://api.yummly.com/v1/api/recipe/" +
@@ -35,7 +41,6 @@ $(document).on("click", "#submitButton", function() {
       $.ajax({
         url: idURL,
         method: "GET"
-
       }).then(function(result) {
         console.log(result);
 
@@ -43,56 +48,50 @@ $(document).on("click", "#submitButton", function() {
         var recipeURL = result.source.sourceRecipeUrl;
         var recipeName = result.name;
         var ingredients = result.ingredientLines;
-
+        var recipeLink = $("<a href='" + recipeURL + "' target='_blank'>");
         var card = $("<div class ='card border-danger bg-light pt-4'>");
 
+        
         var ingredImg = $("<img class='card-image-top' alt='card Image Cap'>");
 
         $(ingredImg).attr("src", resultImgs);
 
-        card.append(ingredImg);
+        recipeLink.append(ingredImg);
 
         var cardBody = $("<div class ='card-body'>");
 
         card.append(cardBody);
 
-        var cardTitle = $("<h5 class='card-title'>Card title</h5>");
+        var cardTitle = $("<h4 class='card-title'></h4>");
 
         cardTitle.text(recipeName);
+        recipeLink.append("<hr>");
+        recipeLink.append(cardTitle);
 
-        cardBody.append(cardTitle);
+        cardBody.append(recipeLink);
 
-        var cardText = $("<p class='card-text'></p>")
+        var cardText = $("<p class='card-text'></p>");
 
         cardBody.append(cardText);
 
-        var cardTextSmall = $("<small class='text-muted'>Last updated 3 mins ago</small>")
+        var cardTextSmall = $(
+          "<small class='text-muted'></small>"
+        );
 
         cardText.append(cardTextSmall);
 
         cardTextSmall.text(ingredients);
 
-        var link = $("<a class='btn btn-outline-danger'> Go to Recipe </a>");
-        $(link).attr("href", recipeURL);
-                
-        cardBody.append(link);
+        var favorite = $('<button class="btn btn-danger" id=" '+ result.id +'" onclick="addToFavorites(this)">♥</button>')
 
-
+        cardBody.append(favorite);
 
         $("#ingredHere").prepend(card);
-
-
-
-        
-        // $(ingredImg).attr("src", recipeURL);
-
-        // console.log(instructions);
       });
     }
 
     //  var recipeResponse = JSON.parse(response);
     //  console.log(recipeResponse.recipe.f2f_url);
-
 
     //  $("#ingredhere").html(recipeResponse.recipe.f2f_url);
     //   console.log(response);
@@ -121,7 +120,7 @@ $(document).on("click", "#submitButton", function() {
     //     rUrl: rUrl,
     //     dateAdded: firebase.database.ServerValue.TIMESTAMP
     //   });
-
   });
-});
 
+  
+});
