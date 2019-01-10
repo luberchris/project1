@@ -3,37 +3,44 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Pantry Signup!</title>
+  <title>Welcome to Pantry!</title>
   <style type="text/css">
-    button,
-    div,
-    form,
-    input {
-      margin: 10px;
-    }
   </style>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Pantry</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" media="screen" href="./assets/css/style.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.7.0/firebase.js"></script>
  
 </head>
 
-<body>
+<body class= "bg-danger">
 
-    <div class="container">
-        <h1>Sign Up for Pantry!</h1>
+    <div class="container-fluid text-white bg-danger text-center m-2 p-2" >
+        <h2>Welcome to Pantry!
+        </h2>
+        <h3>Please enter your e-mail to continue!
+        </h3>
+        <br>
        <!-- displays error message if user submits invalid email-->
-        <div id="email-invalid"></div>
-    
+        <div id="email-invalid">
+        </div>
         <form id="email-form">
-          <label for="email-input">Add your email here!</label>
-          <input type="text" id="email-input"><br>
+          <label for="email-input">Enter email here:
+          </label>
+          <input type="text" id="email-input">
           <!-- submitted email runs click function -->
-          <input id="add-email" type="submit" value="Submit">
+          <br><br>
+          <button class= "btn btn-dark" id="add-email" type="submit" value="Submit"> Submit 
+          </button>
         </form>
-        
-
-  
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript">
+    // if access key stops working we have hit 
       var access_key = '6b78fa23cc5f74ceb6bd5d5b42e5a455';
       var email_address = '';
 
@@ -54,19 +61,38 @@
         console.log(json.smtp_check);
         console.log(json.score);
 
-        //if email score is low, we will print and error message to the dom
-        if (json.score < .7) {
-          $("#email-invalid").empty();
-          $("#email-invalid").text("Invalid email address, please enter again");
-
+        // if email score is sufficient, we redirect user to our actual app homepage
+        if (json.score > .7 && json.format_valid == true && json.smtp_check == true) {
+         console.log(email_address);
+          // $(location).attr('href', 'https://luberchris.github.io/project1/index.html');
        }
-       // if email score is sufficient, we redirect user to our actual app homepage
+       // otherwise print error message to the dom
        else {
-        $(location).attr('href', 'http://stackoverflow.com');
+        $("#email-invalid").empty();
+          $("#email-invalid").text("Invalid email address, please enter again");
       }
 
+      // Initialize Firebase
+   var config = {
+    apiKey: "AIzaSyDMQKoXzxho2wVMf6eGMQRctvUAuo5I31A",
+    authDomain: "socialpantry-29e0d.firebaseapp.com",
+    databaseURL: "https://socialpantry-29e0d.firebaseio.com",
+    projectId: "socialpantry-29e0d",
+    storageBucket: "socialpantry-29e0d.appspot.com",
+    messagingSenderId: "329527149006"
+    };
+
+   firebase.initializeApp(config);
+
+    var database = firebase.database();
+    //push user's email to firebase
+     database.ref().push({
+         email_address: email_address,
+         dateAdded: firebase.database.ServerValue.TIMESTAMP,
+
+       });
+
     }
-    
     
 
     })
