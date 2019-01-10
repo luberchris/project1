@@ -7,15 +7,18 @@
     <title>Pantry</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" media="screen" href="./assets/css/style.css" />
+    <link href="https://unpkg.com/ionicons@4.5.0/dist/css/ionicons.min.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.7.0/firebase.js"></script>
 </head>
 <body>
+  <div class="container">
   <div class="container-fluid">
   <section class="text-center m-2 p-2 rounded bg-light">
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
           <a class="navbar-brand text-danger" href="./index.html">Pantry</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false">
             <span class="navbar-toggler-icon"></span>
           </button>
         
@@ -41,14 +44,13 @@
             </ul>
             <form class="form-inline my-2 my-lg-0">
               <input class="form-control mr-sm-2" id="params" type="search" placeholder="Recipe Search" aria-label="Search">
-              <button class="btn btn-outline-danger my-2 my-sm-0" id="submitButton">Search</button>
+              <button class="btn btn-outline-danger my-2 my-sm-0" id="submitButton" type="submit">Search</button>
             </form>
           </div>
         </nav>
-
-    <div class='container' id='ingredhere'>
-
    </div>
+   <div class='text-center card-columns' id='ingredHere'>
+    </div>
    <script type="text/javascript" src="assets/javascript/app.js"></script>
   </body>
 </html>

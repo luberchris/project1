@@ -36,23 +36,51 @@ $(document).on("click", "#submitButton", function() {
       $.ajax({
         url: idURL,
         method: "GET"
-
       }).then(function(result) {
         console.log(result);
 
         var resultImgs = result.images[0].hostedMediumUrl;
         var recipeURL = result.source.sourceRecipeUrl;
+        var recipeName = result.name;
+        var ingredients = result.ingredientLines;
 
-        var link = $("<a>");
-        $(link).attr("href", recipeURL);
+        var card = $("<div class ='card border-danger bg-light pt-4'>");
 
-        var ingredImg = $("<img>");
-
-        link.append(ingredImg)
-
-        $("#ingredHere").prepend(link);
+        var ingredImg = $("<img class='card-image-top' alt='card Image Cap'>");
 
         $(ingredImg).attr("src", resultImgs);
+
+        card.append(ingredImg);
+
+        var cardBody = $("<div class ='card-body'>");
+
+        card.append(cardBody);
+
+        var cardTitle = $("<h5 class='card-title'>Card title</h5>");
+
+        cardTitle.text(recipeName);
+
+        cardBody.append(cardTitle);
+
+        var cardText = $("<p class='card-text'></p>");
+
+        cardBody.append(cardText);
+
+        var cardTextSmall = $(
+          "<small class='text-muted'>Last updated 3 mins ago</small>"
+        );
+
+        cardText.append(cardTextSmall);
+
+        cardTextSmall.text(ingredients);
+
+        var link = $("<a class='btn btn-outline-danger'> Go to Recipe </a>");
+        $(link).attr("href", recipeURL);
+
+        cardBody.append(link);
+
+        $("#ingredHere").prepend(card);
+
         // $(ingredImg).attr("src", recipeURL);
 
         // console.log(instructions);
@@ -61,7 +89,6 @@ $(document).on("click", "#submitButton", function() {
 
     //  var recipeResponse = JSON.parse(response);
     //  console.log(recipeResponse.recipe.f2f_url);
-
 
     //  $("#ingredhere").html(recipeResponse.recipe.f2f_url);
     //   console.log(response);
@@ -90,7 +117,5 @@ $(document).on("click", "#submitButton", function() {
     //     rUrl: rUrl,
     //     dateAdded: firebase.database.ServerValue.TIMESTAMP
     //   });
-
   });
 });
-
