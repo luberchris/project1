@@ -8,6 +8,8 @@ function addToFavorites(element){
 
 $(document).on("click", "#submitButton", function() {
   event.preventDefault();
+  
+  $("#ingredHere").html("");
 
   var params = $("#params")
     .val()
@@ -47,9 +49,9 @@ $(document).on("click", "#submitButton", function() {
         var resultImgs = result.images[0].hostedMediumUrl;
         var recipeURL = result.source.sourceRecipeUrl;
         var recipeName = result.name;
-        var ingredients = result.ingredientLines;
+        var ingredientsRaw = result.ingredientLines;
         var recipeLink = $("<a href='" + recipeURL + "' target='_blank'>");
-        var card = $("<div class ='card border-danger bg-light pt-4'>");
+        var card = $("<div class='card border-danger bg-light pt-4'>");
 
         
         var ingredImg = $("<img class='card-image-top' alt='card Image Cap'>");
@@ -80,13 +82,54 @@ $(document).on("click", "#submitButton", function() {
 
         cardText.append(cardTextSmall);
 
-        cardTextSmall.text(ingredients);
+        cardTextSmall.text(ingredientsRaw);
 
         var favorite = $('<button class="btn btn-danger" id=" '+ result.id +'" onclick="addToFavorites(this)">♥</button>')
 
         cardBody.append(favorite);
 
         $("#ingredHere").prepend(card);
+
+      fetch("https://zestful-upenn-1.herokuapp.com/parseIngredients", {
+          method : "POST",
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "ingredients": ingredientsRaw
+            })
+      }).then(
+          function(response) {
+            // Check for successful response from Zestful server.
+            if (response.status !== 200) {
+              console.log('Error talking to Zestful server: ' +
+                response.status);
+              return;
+            }
+      
+            // Process the response from Zestful.
+            response.json().then(function(data) {
+              // Check for application-level errors.
+              if (data.error) {
+                console.log(`Failed to process ingredients: ${data.error}`);
+                return;
+              }
+      
+              // Iterate through each ingredient result.
+              data.results.forEach(function(result) {
+                  // Check if Zestful processed this ingredient successfully.
+                  if (result.error) {
+                    console.log(`Error processing ingredient ${result.ingredientRaw}: ${result.error}`);
+                    return;
+                  }
+      
+                  // TODO: Handle ingredient result
+                  console.log(result.ingredientParsed);
+              });
+            });
+          }
+      );
       });
     }
 
