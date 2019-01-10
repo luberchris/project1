@@ -6,6 +6,23 @@ function addToFavorites(element){
   console.log(element.id);
 }
 
+function hash(s) {
+  /* Simple hash function. */
+  s = s.toString();
+  var a = 1, c = 0, h, o;
+  if (s) {
+      a = 0;
+      /*jshint plusplus:false bitwise:false*/
+      for (h = s.length - 1; h >= 0; h--) {
+          o = s.charCodeAt(h);
+          a = (a<<6&268435455) + o + (o<<14);
+          c = a & 266338304;
+          a = c!==0?a^c>>21:a;
+      }
+  }
+  return String(a);
+};
+
 $(document).on("click", "#submitButton", function() {
   event.preventDefault();
   
@@ -32,7 +49,7 @@ $(document).on("click", "#submitButton", function() {
 
     for (var i = 0; i < response.matches.length; i++) {
       var recipeKey = response.matches[i].id;
-
+      recipeIndex = hash(recipeKey);
       
 
       var idURL =
@@ -44,7 +61,7 @@ $(document).on("click", "#submitButton", function() {
         url: idURL,
         method: "GET"
       }).then(function(result) {
-        console.log(result);
+        
 
         var resultImgs = result.images[0].hostedMediumUrl;
         var recipeURL = result.source.sourceRecipeUrl;
@@ -165,5 +182,5 @@ $(document).on("click", "#submitButton", function() {
     //   });
   });
 
-  
+
 });
