@@ -10,7 +10,7 @@ $(document).on("click", "#submitButton", function() {
 
 
   var queryURL =
-    "http://api.yummly.com/v1/api/recipes?_app_id=30ea9a46&_app_key=3d03668731b2112fff8aac21cb03c4ca&q=" +
+    "https://api.yummly.com/v1/api/recipes?_app_id=30ea9a46&_app_key=3d03668731b2112fff8aac21cb03c4ca&q=" +
     params +
     "&requirePictures=true&maxResult=9";
 
@@ -28,7 +28,7 @@ $(document).on("click", "#submitButton", function() {
       console.log(recipeKey);
 
       var idURL =
-        "http://api.yummly.com/v1/api/recipe/" +
+        "https://api.yummly.com/v1/api/recipe/" +
         recipeKey +
         "?_app_id=30ea9a46&_app_key=3d03668731b2112fff8aac21cb03c4ca";
 
