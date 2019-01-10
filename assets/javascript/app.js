@@ -8,6 +8,8 @@ function addToFavorites(element){
 
 $(document).on("click", "#submitButton", function() {
   event.preventDefault();
+  
+  $("#ingredHere").html("");
 
   var params = $("#params")
     .val()
@@ -49,7 +51,7 @@ $(document).on("click", "#submitButton", function() {
         var recipeName = result.name;
         var ingredients = result.ingredientLines;
         var recipeLink = $("<a href='" + recipeURL + "' target='_blank'>");
-        var card = $("<div class ='card border-danger bg-light pt-4'>");
+        var card = $("<div class='card border-danger bg-light pt-4'>");
 
         
         var ingredImg = $("<img class='card-image-top' alt='card Image Cap'>");
