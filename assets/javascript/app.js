@@ -115,6 +115,7 @@ $(document).on("click", "#submitButton", function() {
         cardBody.append(cardText);
         cardText.append(cardTextSmall);
         cardTextSmall.text(ingredientsRaw);
+        cardBody.append(favorite);
 
     
         //add ingredients to DOM 
