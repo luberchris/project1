@@ -1,6 +1,17 @@
-//
-//
-//
+
+// Initialize firebase
+var config = {
+  apiKey: "AIzaSyDMQKoXzxho2wVMf6eGMQRctvUAuo5I31A",
+  authDomain: "socialpantry-29e0d.firebaseapp.com",
+  databaseURL: "https://socialpantry-29e0d.firebaseio.com",
+  projectId: "socialpantry-29e0d",
+  storageBucket: "socialpantry-29e0d.appspot.com",
+  messagingSenderId: "329527149006"
+ };
+
+firebase.initializeApp(config);
+
+var database = firebase.database();
 
 function addToFavorites(element) {
   console.log(element.id);
@@ -172,6 +183,29 @@ $(document).on("click", "#submitButton", function() {
 
 });
 
+// toggle modal on page load
+//$(window).on('load',function(){
+  //$('#myModal').modal('show');
+// });
+
+// Get the modal
+
+function hideModal() {
+  $("#myModal").removeClass("in");
+  $(".modal-backdrop").remove();
+  $('body').removeClass('modal-open');
+  $('body').css('padding-right', '');
+  $("#myModal").hide();
+}
+
+$(document).on("click", "#loginButton", function() {
+  console.log("login clicked");
+//document.modal.style.display='block';
+});
+
+
+
+
       var access_key = '6b78fa23cc5f74ceb6bd5d5b42e5a455';
       var email = '';
 
@@ -196,22 +230,12 @@ $(document).on("click", "#submitButton", function() {
 
         // if email score is sufficient, we redirect user to our actual app homepage
         if (json.score > .7 && json.format_valid == true && json.smtp_check == true && password.length > 5 && username.length > 5) {
+          $("#myModal").modal("hide");
           console.log(email);
           console.log(password);
           console.log(password.length);
           console.log(username);
-         var config = {
-         apiKey: "AIzaSyDMQKoXzxho2wVMf6eGMQRctvUAuo5I31A",
-         authDomain: "socialpantry-29e0d.firebaseapp.com",
-         databaseURL: "https://socialpantry-29e0d.firebaseio.com",
-         projectId: "socialpantry-29e0d",
-         storageBucket: "socialpantry-29e0d.appspot.com",
-         messagingSenderId: "329527149006"
-        };
- 
-       firebase.initializeApp(config);
- 
-       var database = firebase.database();
+          hideModal();
  
        var userData = {
          email: email,
@@ -230,11 +254,11 @@ $(document).on("click", "#submitButton", function() {
             $("#email-invalid").text("Invalid email and/or too short of a password , please enter again");
         }
   
-       database.ref('users/' + username).update(updates);
+       //database.ref('users/' + username).update(updates);
 
-      var updates = {
-          savedRecipes: ["cheese", "onions", "bacon"]
-        }
+      //var updates = {
+         // savedRecipes: ["cheese", "onions", "bacon"]
+      //  }
 
        database.ref('users/' + "woatthbewruoigtuso").once('value').then(function(snapshot){
         console.log(snapshot.val().email);
