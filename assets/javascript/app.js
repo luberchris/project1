@@ -187,6 +187,8 @@ $(document).on("click", "#submitButton", function() {
   });
 });
 
+var shoppinglist = [];
+
 $(document).on("click", ".favoriteButton", function() {
   event.preventDefault();
   console.log("Favorited: " + this.id);
@@ -201,7 +203,7 @@ $(document).on("click", ".favoriteButton", function() {
   }).then(function(result) {
     fetch("https://zestful-upenn-1.herokuapp.com/parseIngredients", {
       method: "POST",
-      headers: {
+      headers: {  
         Accept: "application/json",
         "Content-Type": "application/json"
       },
@@ -240,6 +242,9 @@ $(document).on("click", ".favoriteButton", function() {
           if (result.ingredientParsed.product != null) {
             // TODO: Handle ingredient result
             console.log(total + ": " + result.ingredientParsed.product.toLowerCase());
+            if (!shoppinglist.includes(result.ingredientParsed.product.toLowerCase())) {
+              shoppinglist.push(result.ingredientParsed.product.toLowerCase());
+            }
           }
         });
       });
