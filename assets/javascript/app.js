@@ -95,14 +95,10 @@ $(document).on("click", "#submitButton", function() {
         //variables to build recipe cards
         var recipeLink = $("<a href='" + recipeURL + "' target='_blank'>");
         var card = $("<div class='card border-danger bg-light pt-4'>");
-
-
-
         var cardBody = $("<div class ='card-body'>");
         var cardTitle = $("<h4 class='card-title'></h4>");
         var cardText = $("<p class='card-text'></p>");
         var cardTextSmall = $("<small class='text-muted'></small>");
-
         var ingredImg = $("<img class='card-image-top' alt='card Image Cap'>");
         var favorite = $('<button class="btn btn-danger" id=" '+ result.id +'" onclick="addToFavorites(this)">♥</button>')
 
@@ -120,12 +116,7 @@ $(document).on("click", "#submitButton", function() {
         cardText.append(cardTextSmall);
         cardTextSmall.text(ingredientsRaw);
 
-        var favorite = $(
-          '<button class="btn btn-danger favoriteButton" id=" ' +
-            result.id +
-            '" onclick="addToFavorites(this)">♥</button>'
-        );
-
+    
         //add ingredients to DOM 
         $("#ingredHere").prepend(card);
 
