@@ -33,6 +33,10 @@
           <br>
           <input type="text" id="email-input">
           <br>
+          <label for="username-input">Username:</label>
+          <br>
+          <input type="text" id="username-input">
+          <br>
           <label for="password-input">Password:</label>
             <br>
           <input type="text" id="password-input">
@@ -42,9 +46,85 @@
           </button>
         </form>
 
-  </div>
-</body>
-<script type="text/javascript" src="assets/javascript/app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+    // if access key stops working we have hit 
+      var access_key = '6b78fa23cc5f74ceb6bd5d5b42e5a455';
+      var email = '';
+
+      // This function handles events where one button is clicked
+      $("#add-email").on("click", function(event) {
+        // Preventing the buttons default behavior when clicked (which is submitting a form)
+        event.preventDefault();
+        // This line grabs the input from the textbox
+        var email = $("#email-input").val().trim();
+        var password = $("#password-input").val().trim();
+        var username = $("#username-input").val().trim();
+         // verify email address via AJAX call
+        $.ajax({
+        url: 'http://apilayer.net/api/check?access_key=' + access_key + '&email=' + email,   
+        dataType: 'jsonp',
+        success: function(json) {
+
+        // Access and use your preferred validation result objects
+        console.log(json.format_valid);
+        console.log(json.smtp_check);
+        console.log(json.score);
+
+        // if email score is sufficient, we redirect user to our actual app homepage
+        if (json.score > .7 && json.format_valid == true && json.smtp_check == true && password.length > 5 && username.length > 5) {
+         console.log(email);
+         console.log(password);
+         console.log(password.length);
+         console.log(username);
+        var config = {
+        apiKey: "AIzaSyDMQKoXzxho2wVMf6eGMQRctvUAuo5I31A",
+        authDomain: "socialpantry-29e0d.firebaseapp.com",
+        databaseURL: "https://socialpantry-29e0d.firebaseio.com",
+        projectId: "socialpantry-29e0d",
+        storageBucket: "socialpantry-29e0d.appspot.com",
+        messagingSenderId: "329527149006"
+    };
+
+      firebase.initializeApp(config);
+
+      var database = firebase.database();
+
+      var userData = {
+        email: email,
+        password: password,
+        savedRecipes: [],
+        dateAdded: firebase.database.ServerValue.TIMESTAMP,
+      }
+
+
+
+      
+    //push user's email to firebase
+     database.ref('users/' + username).set(userData);
+          // $(location).attr('href', 'https://luberchris.github.io/project1/index.html');
+       }
+       // otherwise print error message to the dom
+       else {
+        $("#email-invalid").empty();
+          $("#email-invalid").text("Invalid email and/or too short of a password , please enter again");
+      }
+      var updates = {
+        savedRecipes: ["cheese", "onions", "bacon"]
+      }
+      database.ref('users/' + username).update(updates);
+
+      // Initialize Firebase
+ 
+
+    }
+    
+
+    })
+
+      });
+
+     
 
   </div>
 </body>
