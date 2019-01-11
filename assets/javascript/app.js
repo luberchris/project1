@@ -112,6 +112,7 @@ $(document).on("click", "#submitButton", function() {
         cardBody.append(cardText);
         cardText.append(cardTextSmall);
         cardTextSmall.text(ingredientsRaw);
+        cardBody.append(favorite);
 
         var favorite = $(
           '<button class="btn btn-danger favoriteButton" id=" ' +
@@ -244,7 +245,7 @@ fetch("https://zestful-upenn-1.herokuapp.com/parseIngredients", {
     "Content-Type": "application/json"
   },
   body: JSON.stringify({
-    ingredients: ingredientsRaw
+    ingredients: ingredientRaw
   })
 }).then(function(response) {
   // Check for successful response from Zestful server.
