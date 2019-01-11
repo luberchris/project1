@@ -172,7 +172,7 @@ $(document).on("click", "#submitButton", function() {
 
 });
 
-var access_key = '6b78fa23cc5f74ceb6bd5d5b42e5a455';
+      var access_key = '6b78fa23cc5f74ceb6bd5d5b42e5a455';
       var email = '';
 
       // This function handles events where one button is clicked
@@ -182,6 +182,7 @@ var access_key = '6b78fa23cc5f74ceb6bd5d5b42e5a455';
         // This line grabs the input from the textbox
         var email = $("#email-input").val().trim();
         var password = $("#password-input").val().trim();
+        var username = $("#username-input").val().trim();
          // verify email address via AJAX call
         $.ajax({
         url: 'http://apilayer.net/api/check?access_key=' + access_key + '&email=' + email,   
@@ -194,44 +195,62 @@ var access_key = '6b78fa23cc5f74ceb6bd5d5b42e5a455';
         console.log(json.score);
 
         // if email score is sufficient, we redirect user to our actual app homepage
-        if (json.score > .7 && json.format_valid == true && json.smtp_check == true) {
-         console.log(email);
-         console.log(password);
-          // $(location).attr('href', 'https://luberchris.github.io/project1/index.html');
+        if (json.score > .7 && json.format_valid == true && json.smtp_check == true && password.length > 5 && username.length > 5) {
+          console.log(email);
+          console.log(password);
+          console.log(password.length);
+          console.log(username);
+         var config = {
+         apiKey: "AIzaSyDMQKoXzxho2wVMf6eGMQRctvUAuo5I31A",
+         authDomain: "socialpantry-29e0d.firebaseapp.com",
+         databaseURL: "https://socialpantry-29e0d.firebaseio.com",
+         projectId: "socialpantry-29e0d",
+         storageBucket: "socialpantry-29e0d.appspot.com",
+         messagingSenderId: "329527149006"
+        };
+ 
+       firebase.initializeApp(config);
+ 
+       var database = firebase.database();
+ 
+       var userData = {
+         email: email,
+         password: password,
+         savedRecipes: [],
+         dateAdded: firebase.database.ServerValue.TIMESTAMP,
        }
-       // otherwise print error message to the dom
-       else {
-        $("#email-invalid").empty();
-          $("#email-invalid").text("Invalid email address, please enter again");
-      }
+       
+     //push user's email to firebase
+      database.ref('users/' + username).set(userData);
+           // $(location).attr('href', 'https://luberchris.github.io/project1/index.html');
+        }
+        // otherwise print error message to the dom
+        else {
+            $("#email-invalid").empty();
+            $("#email-invalid").text("Invalid email and/or too short of a password , please enter again");
+        }
+  
+       database.ref('users/' + username).update(updates);
 
-      // Initialize Firebase
-   var config = {
-    apiKey: "AIzaSyDMQKoXzxho2wVMf6eGMQRctvUAuo5I31A",
-    authDomain: "socialpantry-29e0d.firebaseapp.com",
-    databaseURL: "https://socialpantry-29e0d.firebaseio.com",
-    projectId: "socialpantry-29e0d",
-    storageBucket: "socialpantry-29e0d.appspot.com",
-    messagingSenderId: "329527149006"
-    };
+      var updates = {
+          savedRecipes: ["cheese", "onions", "bacon"]
+        }
 
-   firebase.initializeApp(config);
-    var userData = {
-      email: email,
-      password: password,
-      savedRecipes: [],
-      dateAdded: firebase.database.ServerValue.TIMESTAMP,
-    }
-    //push user's email to firebase
-     database.ref().push(userData);
-
-    }
+       database.ref('users/' + "woatthbewruoigtuso").once('value').then(function(snapshot){
+        console.log(snapshot.val().email);
+        console.log(snapshot.val().savedRecipes);
+      })
+     }
     
+   })
+   
 
-    })
+});
 
-      });
-
+ 
+    
+   
+ 
 
 
       fetch("https://zestful-upenn-1.herokuapp.com/parseIngredients", {
@@ -274,12 +293,7 @@ var access_key = '6b78fa23cc5f74ceb6bd5d5b42e5a455';
             });
           }
       );
-      });
-    }
 
-    
-  });
-});
 
 $(document).on("click", ".favoriteButton", function() {
   event.preventDefault();
