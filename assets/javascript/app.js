@@ -23,17 +23,21 @@ function hash(s) {
   return String(a);
 };
 
+//on click to perform the initial receipe search 
 $(document).on("click", "#submitButton", function() {
   event.preventDefault();
   
+  //clear dom for new search results
   $("#ingredHere").html("");
 
+  //turn search terms into parameters for passing into the query URL
   var params = $("#params")
     .val()
     .trim()
     .replace(/ /g, "+");
   console.log(params);
 
+  //yummly query URL for initial recipe search
   var queryURL =
     "https://api.yummly.com/v1/api/recipes?_app_id=30ea9a46&_app_key=3d03668731b2112fff8aac21cb03c4ca&q=" +
     params +
@@ -41,70 +45,62 @@ $(document).on("click", "#submitButton", function() {
 
   console.log(queryURL);
 
+  //initial ajax call to get search results
   $.ajax({
     url: queryURL,
     method: "GET"
   }).then(function(response) {
     console.log(response);
 
+    //loop that iterates over responses to add recipe IDs as an attribute 
     for (var i = 0; i < response.matches.length; i++) {
       var recipeKey = response.matches[i].id;
       recipeIndex = hash(recipeKey);
       
-
+      //secondary api URL that returns individual recipe results using recipe key as identifier
       var idURL =
         "https://api.yummly.com/v1/api/recipe/" +
         recipeKey +
         "?_app_id=30ea9a46&_app_key=3d03668731b2112fff8aac21cb03c4ca";
 
+      //secondary AJAX call to return the individual results 
       $.ajax({
         url: idURL,
         method: "GET"
       }).then(function(result) {
         
-
+        //variables assigning JSON elements from API call
         var resultImgs = result.images[0].hostedMediumUrl;
         var recipeURL = result.source.sourceRecipeUrl;
         var recipeName = result.name;
         var ingredientsRaw = result.ingredientLines;
+
+        //variables to build recipe cards
         var recipeLink = $("<a href='" + recipeURL + "' target='_blank'>");
         var card = $("<div class='card border-danger bg-light pt-4'>");
-
-        
+        var cardBody = $("<div class ='card-body'>");
+        var cardTitle = $("<h4 class='card-title'></h4>");
+        var cardText = $("<p class='card-text'></p>");
+        var cardTextSmall = $("<small class='text-muted'></small>");
         var ingredImg = $("<img class='card-image-top' alt='card Image Cap'>");
+        var favorite = $('<button class="btn btn-danger" id=" '+ result.id +'" onclick="addToFavorites(this)">♥</button>')
 
+        //add links to returned images
         $(ingredImg).attr("src", resultImgs);
 
+        //build cards to house results
         recipeLink.append(ingredImg);
-
-        var cardBody = $("<div class ='card-body'>");
-
         card.append(cardBody);
-
-        var cardTitle = $("<h4 class='card-title'></h4>");
-
         cardTitle.text(recipeName);
         recipeLink.append("<hr>");
         recipeLink.append(cardTitle);
-
         cardBody.append(recipeLink);
-
-        var cardText = $("<p class='card-text'></p>");
-
         cardBody.append(cardText);
-
-        var cardTextSmall = $(
-          "<small class='text-muted'></small>"
-        );
-
         cardText.append(cardTextSmall);
-
         cardTextSmall.text(ingredientsRaw);
-
-        var favorite = $('<button class="btn btn-danger" id=" '+ result.id +'" onclick="addToFavorites(this)">♥</button>')
-
         cardBody.append(favorite);
 
+        //add ingredients to DOM 
         $("#ingredHere").prepend(card);
 
       fetch("https://zestful-upenn-1.herokuapp.com/parseIngredients", {
