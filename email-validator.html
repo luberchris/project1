@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Welcome to Pantry!</title>
+  <style type="text/css">
+  </style>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Pantry</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" media="screen" href="./assets/css/style.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.7.0/firebase.js"></script>
+ 
+</head>
+
+<body class= "bg-danger">
+
+    <div class="container-fluid text-white bg-danger text-center m-2 p-2" >
+        <h2>Welcome to Pantry!
+        </h2>
+        <h3>Please create a login to continue!
+        </h3>
+        <br>
+       <!-- displays error message if user submits invalid email-->
+        <div id="email-invalid">
+        </div>
+        <form id="email-form">
+          <label for="email-input">Email:</label>
+          <br>
+          <input type="text" id="email-input">
+          <br>
+          <label for="password-input">Password:</label>
+            <br>
+          <input type="text" id="password-input">
+          <!-- submitted email runs click function -->
+          <br><br>
+          <button class= "btn btn-dark" id="add-email" type="submit" value="Submit"> Submit 
+          </button>
+        </form>
+  </div>
+</body>
+<script type="text/javascript" src="assets/javascript/app.js"></script>
+
+</html>
