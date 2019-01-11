@@ -2,33 +2,38 @@
 //
 //
 
-function addToFavorites(element){
+function addToFavorites(element) {
   console.log(element.id);
 }
 
 function hash(s) {
   /* Simple hash function. */
   s = s.toString();
-  var a = 1, c = 0, h, o;
+  var a = 1,
+    c = 0,
+    h,
+    o;
   if (s) {
-      a = 0;
-      /*jshint plusplus:false bitwise:false*/
-      for (h = s.length - 1; h >= 0; h--) {
-          o = s.charCodeAt(h);
-          a = (a<<6&268435455) + o + (o<<14);
-          c = a & 266338304;
-          a = c!==0?a^c>>21:a;
-      }
+    a = 0;
+    /*jshint plusplus:false bitwise:false*/
+    for (h = s.length - 1; h >= 0; h--) {
+      o = s.charCodeAt(h);
+      a = ((a << 6) & 268435455) + o + (o << 14);
+      c = a & 266338304;
+      a = c !== 0 ? a ^ (c >> 21) : a;
+    }
   }
   return String(a);
-};
+}
 
 
 //on click to perform the initial receipe search 
 $(document).on("click", "#submitButton", function() {
   event.preventDefault();
-  
+
+
   //clear dom for new search results
+
   $("#ingredHere").html("");
 
   //turn search terms into parameters for passing into the query URL
@@ -62,7 +67,6 @@ $(document).on("click", "#submitButton", function() {
     for (var i = 0; i < response.matches.length; i++) {
       var recipeKey = response.matches[i].id;
       recipeIndex = hash(recipeKey);
-      
 
       //secondary api URL that returns individual recipe results using recipe key as identifier
 
@@ -77,6 +81,7 @@ $(document).on("click", "#submitButton", function() {
         url: idURL,
         method: "GET"
       }).then(function(result) {
+
         
 
         //variables assigning JSON elements from API call
@@ -90,10 +95,14 @@ $(document).on("click", "#submitButton", function() {
         //variables to build recipe cards
         var recipeLink = $("<a href='" + recipeURL + "' target='_blank'>");
         var card = $("<div class='card border-danger bg-light pt-4'>");
+
+
+
         var cardBody = $("<div class ='card-body'>");
         var cardTitle = $("<h4 class='card-title'></h4>");
         var cardText = $("<p class='card-text'></p>");
         var cardTextSmall = $("<small class='text-muted'></small>");
+
         var ingredImg = $("<img class='card-image-top' alt='card Image Cap'>");
         var favorite = $('<button class="btn btn-danger" id=" '+ result.id +'" onclick="addToFavorites(this)">♥</button>')
 
@@ -110,51 +119,59 @@ $(document).on("click", "#submitButton", function() {
         cardBody.append(cardText);
         cardText.append(cardTextSmall);
         cardTextSmall.text(ingredientsRaw);
-        cardBody.append(favorite);
+
+        var favorite = $(
+          '<button class="btn btn-danger favoriteButton" id=" ' +
+            result.id +
+            '" onclick="addToFavorites(this)">♥</button>'
+        );
 
         //add ingredients to DOM 
         $("#ingredHere").prepend(card);
 
-      fetch("https://zestful-upenn-1.herokuapp.com/parseIngredients", {
-          method : "POST",
+        fetch("https://zestful-upenn-1.herokuapp.com/parseIngredients", {
+          method: "POST",
           headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            Accept: "application/json",
+            "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            "ingredients": ingredientsRaw
-            })
-      }).then(
-          function(response) {
-            // Check for successful response from Zestful server.
-            if (response.status !== 200) {
-              console.log('Error talking to Zestful server: ' +
-                response.status);
+            ingredients: ingredientsRaw
+          })
+        }).then(function(response) {
+          // Check for successful response from Zestful server.
+          if (response.status !== 200) {
+            console.log("Error talking to Zestful server: " + response.status);
+            return;
+          }
+
+          // Process the response from Zestful.
+          response.json().then(function(data) {
+            // Check for application-level errors.
+            if (data.error) {
+              console.log(`Failed to process ingredients: ${data.error}`);
               return;
             }
-      
-            // Process the response from Zestful.
-            response.json().then(function(data) {
-              // Check for application-level errors.
-              if (data.error) {
-                console.log(`Failed to process ingredients: ${data.error}`);
+
+            // Iterate through each ingredient result.
+            data.results.forEach(function(result) {
+              // Check if Zestful processed this ingredient successfully.
+              if (result.error) {
+                console.log(
+                  `Error processing ingredient ${result.ingredientRaw}: ${
+                    result.error
+                  }`
+                );
                 return;
               }
-      
-              // Iterate through each ingredient result.
-              data.results.forEach(function(result) {
-                  // Check if Zestful processed this ingredient successfully.
-                  if (result.error) {
-                    console.log(`Error processing ingredient ${result.ingredientRaw}: ${result.error}`);
-                    return;
-                  }
-      
-                  // TODO: Handle ingredient result
-                  console.log(result.ingredientParsed);
-              });
+
+              // if (result.ingredientParsed.product != null) {
+              //   // TODO: Handle ingredient result
+              //   console.log(result.ingredientParsed.product);
+              // }
             });
-          }
-      );
+          });
+        });
       });
     }
 
@@ -270,7 +287,65 @@ var access_key = '6b78fa23cc5f74ceb6bd5d5b42e5a455';
 
     
   });
+});
 
+$(document).on("click", ".favoriteButton", function() {
+  event.preventDefault();
+  console.log("Favorited: " + this.id);
 
+  var yummlyURL = "https://api.yummly.com/v1/api/recipe/" +
+    this.id.trim() +
+    "?_app_id=30ea9a46&_app_key=3d03668731b2112fff8aac21cb03c4ca"
+
+  $.ajax({
+    url: yummlyURL,
+    method: "GET"
+  }).then(function(result) {
+    fetch("https://zestful-upenn-1.herokuapp.com/parseIngredients", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ingredients: result.ingredientLines
+      })
+    }).then(function(response) {
+      // Check for successful response from Zestful server.
+      if (response.status !== 200) {
+        console.log("Error talking to Zestful server: " + response.status);
+        return;
+      }
+
+      // Process the response from Zestful.
+      response.json().then(function(data) {
+        // Check for application-level errors.
+        if (data.error) {
+          console.log(`Failed to process ingredients: ${data.error}`);
+          return;
+        }
+
+        total = 0;
+        // Iterate through each ingredient result.
+        data.results.forEach(function(result) {
+          total += 1;
+          // Check if Zestful processed this ingredient successfully.
+          if (result.error) {
+            console.log(
+              `Error processing ingredient ${result.ingredientRaw}: ${
+                result.error
+              }`
+            );
+            return;
+          }
+
+          if (result.ingredientParsed.product != null) {
+            // TODO: Handle ingredient result
+            console.log(total + ": " + result.ingredientParsed.product.toLowerCase());
+          }
+        });
+      });
+    });
+  });
 });
 
