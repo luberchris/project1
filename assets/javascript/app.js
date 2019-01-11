@@ -183,29 +183,11 @@ $(document).on("click", "#submitButton", function() {
 
 });
 
-// toggle modal on page load
-//$(window).on('load',function(){
-  //$('#myModal').modal('show');
-// });
-
-// Get the modal
-
-function hideModal() {
-  $("#myModal").removeClass("in");
-  $(".modal-backdrop").remove();
-  $('body').removeClass('modal-open');
-  $('body').css('padding-right', '');
-  $("#myModal").hide();
-}
-
 $(document).on("click", "#loginButton", function() {
   console.log("login clicked");
+  $('#myModal').modal('show')
 //document.modal.style.display='block';
 });
-
-
-
-
       var access_key = '6b78fa23cc5f74ceb6bd5d5b42e5a455';
       var email = '';
 
@@ -267,56 +249,10 @@ $(document).on("click", "#loginButton", function() {
      }
     
    })
-   
+
 
 });
 
- 
-    
-   
- 
-
-
-      fetch("https://zestful-upenn-1.herokuapp.com/parseIngredients", {
-          method : "POST",
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            "ingredients": ingredientsRaw
-            })
-      }).then(
-          function(response) {
-            // Check for successful response from Zestful server.
-            if (response.status !== 200) {
-              console.log('Error talking to Zestful server: ' +
-                response.status);
-              return;
-            }
-      
-            // Process the response from Zestful.
-            response.json().then(function(data) {
-              // Check for application-level errors.
-              if (data.error) {
-                console.log(`Failed to process ingredients: ${data.error}`);
-                return;
-              }
-      
-              // Iterate through each ingredient result.
-              data.results.forEach(function(result) {
-                  // Check if Zestful processed this ingredient successfully.
-                  if (result.error) {
-                    console.log(`Error processing ingredient ${result.ingredientRaw}: ${result.error}`);
-                    return;
-                  }
-      
-                  // TODO: Handle ingredient result
-                  console.log(result.ingredientParsed);
-              });
-            });
-          }
-      );
 
 
 $(document).on("click", ".favoriteButton", function() {
