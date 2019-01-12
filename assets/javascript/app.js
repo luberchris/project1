@@ -324,7 +324,7 @@ $("#add-email").on("click", function(event) {
   // verify email address via AJAX call
   $.ajax({
     url:
-      "http://apilayer.net/api/check?access_key=" +
+      "https://apilayer.net/api/check?access_key=" +
       access_key +
       "&email=" +
       email,
