@@ -217,7 +217,6 @@ $(document).on("click", "#loginButton", function() {
           console.log(password);
           console.log(password.length);
           console.log(username);
-          hideModal();
  
        var userData = {
          email: email,
