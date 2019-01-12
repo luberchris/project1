@@ -11,6 +11,7 @@ var config = {
 firebase.initializeApp(config);
 var username = "";
 var favoriteRecipe = "";
+var savedRecipes = ["Here are your recipes!"];
 
 var database = firebase.database();
 
@@ -354,21 +355,18 @@ $("#add-email").on("click", function(event) {
          .once("value")
         .then(function(snapshot) {
         savedRecipes = snapshot.val().savedRecipes;
-        console.log(savedRecipes(0));
         })
-
-          
-        savedRecipes.push(favoriteRecipe);
-        console.log(savedRecipes);
-
 
 
         var userData = {
           email: email,
           password: password,
-          savedRecipes: ["Here are your recipes"],
+          savedRecipes: savedRecipes,
           dateAdded: firebase.database.ServerValue.TIMESTAMP
         };
+
+        savedRecipes.push(favoriteRecipe);
+        console.log(savedRecipes);
 
         //push user's email to firebase
         database.ref("users/" + username).set(userData);
