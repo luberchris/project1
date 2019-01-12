@@ -18,6 +18,8 @@ else {
   var username = "";
 }
 
+var shoppinglist = ["Here is your shopping list!"];
+
 var savedRecipes = ["Here are your recipes!"];
 
 var database = firebase.database();
@@ -358,6 +360,7 @@ $("#add-email").on("click", function(event) {
           email: email,
           password: password,
           savedRecipes: savedRecipes,
+          shoppinglist : shoppinglist,
           dateAdded: firebase.database.ServerValue.TIMESTAMP
         };
 
@@ -390,7 +393,6 @@ $("#add-email").on("click", function(event) {
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////
-var shoppinglist = [];
 
 $(document).on("click", ".favoriteButton", function() {
   event.preventDefault();
@@ -402,10 +404,7 @@ $(document).on("click", ".favoriteButton", function() {
     .then(function(snapshot) {
       savedRecipes = snapshot.val().savedRecipes;
       savedRecipes.push(favoriteRecipe);
-      console.log(savedRecipes);
-
       database.ref("users/" + username + "/savedRecipes").set(savedRecipes);
-      // database.ref("users/" + username + "/savedRecipes").set(setFavorite);
     });
 
   //
@@ -476,6 +475,8 @@ $(document).on("click", ".favoriteButton", function() {
               shoppinglist.push(result.ingredientParsed.product.toLowerCase());
             }
           }
+
+          
         });
       });
     });
@@ -499,4 +500,23 @@ $(document).on("click", ".removeFavorite", function() {
       }
       snapshot.ref.update({savedRecipes : savedRecipes});
     });
+});
+
+//////////////////////////////////////////////////////////////////////////////////////
+$(document).on("click", "#listButton", function() {
+  shoppingListDiv = $("<div class='text-left' id='shoppinglist'>");
+  for (var i=1; i < shoppinglist.length; i++){
+    itemDiv = $("<div class='form-check'>");
+    button = $("<input class='form-check-input' type='checkbox'>");
+    item = $("<label class='form-check-label'>");
+
+    item.text(shoppinglist[i]);
+
+    itemDiv.append(button);
+    itemDiv.append(item);
+
+    shoppingListDiv.append(itemDiv);
+  }
+
+  $("#ingredHere").html(shoppingListDiv);
 });
