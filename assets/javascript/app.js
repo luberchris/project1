@@ -10,7 +10,7 @@ var config = {
 
 firebase.initializeApp(config);
 
-if (typeof localStorage.getItem('pantryUniqueUsername') !== undefined){
+if (localStorage.getItem('pantryUniqueUsername') !== null){
   var username = localStorage.getItem('pantryUniqueUsername');
   $("#loginButton").text(username + " | Change User");
 }
