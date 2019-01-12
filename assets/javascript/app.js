@@ -348,6 +348,20 @@ $("#add-email").on("click", function(event) {
         console.log(password);
         console.log(password.length);
         console.log(username);
+        
+        database
+        .ref("users/" + username)
+         .once("value")
+        .then(function(snapshot) {
+        savedRecipes = snapshot.val().savedRecipes;
+        console.log(savedRecipes(0));
+        })
+
+          
+        savedRecipes.push(favoriteRecipe);
+        console.log(savedRecipes);
+
+
 
         var userData = {
           email: email,
