@@ -10,6 +10,7 @@ var config = {
 
 firebase.initializeApp(config);
 var username = "";
+var favoriteRecipe = "";
 
 var database = firebase.database();
 
@@ -228,7 +229,7 @@ $("#add-email").on("click", function(event) {
         var userData = {
           email: email,
           password: password,
-          savedRecipes: [],
+          savedRecipes: ["Here are your recipes"],
           dateAdded: firebase.database.ServerValue.TIMESTAMP
         };
 
@@ -265,7 +266,25 @@ var shoppinglist = [];
 
 $(document).on("click", ".favoriteButton", function() {
   event.preventDefault();
+  favoriteRecipe = this.id;
+  console.log(favoriteRecipe);
+  database
+  .ref("users/" + username)
+  .once("value")
+  .then(function(snapshot) {
+    savedRecipes = snapshot.val().savedRecipes;
+    savedRecipes.push(favoriteRecipe);
+    console.log(savedRecipes);
+   
+    database.ref("users/" + username+"/savedRecipes").set(savedRecipes);
+
+  }
+  );
+
+ 
   console.log("Favorited: " + this.id);
+
+  
 
   var yummlyURL =
     "https://api.yummly.com/v1/api/recipe/" +
