@@ -254,13 +254,56 @@ $(document).on("click", "#loginButton", function() {
 
 
 
+fetch("https://zestful-upenn-1.herokuapp.com/parseIngredients", {
+  method: "POST",
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    ingredients: ingredientRaw
+  })
+}).then(function(response) {
+  // Check for successful response from Zestful server.
+  if (response.status !== 200) {
+    console.log("Error talking to Zestful server: " + response.status);
+    return;
+  }
+
+  // Process the response from Zestful.
+  response.json().then(function(data) {
+    // Check for application-level errors.
+    if (data.error) {
+      console.log(`Failed to process ingredients: ${data.error}`);
+      return;
+    }
+
+    // Iterate through each ingredient result.
+    data.results.forEach(function(result) {
+      // Check if Zestful processed this ingredient successfully.
+      if (result.error) {
+        console.log(
+          `Error processing ingredient ${result.ingredientRaw}: ${result.error}`
+        );
+        return;
+      }
+
+      // TODO: Handle ingredient result
+      console.log(result.ingredientParsed);
+    });
+  });
+});
+
+var shoppinglist = [];
+
 $(document).on("click", ".favoriteButton", function() {
   event.preventDefault();
   console.log("Favorited: " + this.id);
 
-  var yummlyURL = "https://api.yummly.com/v1/api/recipe/" +
+  var yummlyURL =
+    "https://api.yummly.com/v1/api/recipe/" +
     this.id.trim() +
-    "?_app_id=30ea9a46&_app_key=3d03668731b2112fff8aac21cb03c4ca"
+    "?_app_id=30ea9a46&_app_key=3d03668731b2112fff8aac21cb03c4ca";
 
   $.ajax({
     url: yummlyURL,
@@ -306,11 +349,19 @@ $(document).on("click", ".favoriteButton", function() {
 
           if (result.ingredientParsed.product != null) {
             // TODO: Handle ingredient result
-            console.log(total + ": " + result.ingredientParsed.product.toLowerCase());
+            console.log(
+              total + ": " + result.ingredientParsed.product.toLowerCase()
+            );
+            if (
+              !shoppinglist.includes(
+                result.ingredientParsed.product.toLowerCase()
+              )
+            ) {
+              shoppinglist.push(result.ingredientParsed.product.toLowerCase());
+            }
           }
         });
       });
     });
   });
 });
-
