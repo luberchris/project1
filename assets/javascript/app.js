@@ -1,6 +1,17 @@
-//
-//
-//
+// Initialize firebase
+var config = {
+  apiKey: "AIzaSyDMQKoXzxho2wVMf6eGMQRctvUAuo5I31A",
+  authDomain: "socialpantry-29e0d.firebaseapp.com",
+  databaseURL: "https://socialpantry-29e0d.firebaseio.com",
+  projectId: "socialpantry-29e0d",
+  storageBucket: "socialpantry-29e0d.appspot.com",
+  messagingSenderId: "329527149006"
+};
+
+firebase.initializeApp(config);
+var username = "";
+
+var database = firebase.database();
 
 function addToFavorites(element) {
   console.log(element.id);
@@ -86,15 +97,13 @@ $(document).on("click", "#submitButton", function() {
         //variables to build recipe cards
         var recipeLink = $("<a href='" + recipeURL + "' target='_blank'>");
         var card = $("<div class='card border-danger bg-light pt-4'>");
-
         var cardBody = $("<div class ='card-body'>");
         var cardTitle = $("<h4 class='card-title'></h4>");
         var cardText = $("<p class='card-text'></p>");
         var cardTextSmall = $("<small class='text-muted'></small>");
-
         var ingredImg = $("<img class='card-image-top' alt='card Image Cap'>");
         var favorite = $(
-          '<button class="btn btn-danger" id=" ' +
+          '<button class="btn btn-danger favoriteButton" id=" ' +
             result.id +
             '" onclick="addToFavorites(this)">♥</button>'
         );
@@ -113,12 +122,6 @@ $(document).on("click", "#submitButton", function() {
         cardText.append(cardTextSmall);
         cardTextSmall.text(ingredientsRaw);
         cardBody.append(favorite);
-
-        var favorite = $(
-          '<button class="btn btn-danger favoriteButton" id=" ' +
-            result.id +
-            '" onclick="addToFavorites(this)">♥</button>'
-        );
 
         //add ingredients to DOM
         $("#ingredHere").prepend(card);
@@ -149,6 +152,7 @@ $(document).on("click", "#submitButton", function() {
 
             // Iterate through each ingredient result.
             data.results.forEach(function(result) {
+              
               // Check if Zestful processed this ingredient successfully.
               if (result.error) {
                 console.log(
@@ -171,6 +175,11 @@ $(document).on("click", "#submitButton", function() {
   });
 });
 
+$(document).on("click", "#loginButton", function() {
+  console.log("login clicked");
+  $("#myModal").modal("show");
+  //document.modal.style.display='block';
+});
 var access_key = "6b78fa23cc5f74ceb6bd5d5b42e5a455";
 var email = "";
 
@@ -183,6 +192,9 @@ $("#add-email").on("click", function(event) {
     .val()
     .trim();
   var password = $("#password-input")
+    .val()
+    .trim();
+  username = $("#username-input")
     .val()
     .trim();
   // verify email address via AJAX call
@@ -203,78 +215,49 @@ $("#add-email").on("click", function(event) {
       if (
         json.score > 0.7 &&
         json.format_valid == true &&
-        json.smtp_check == true
+        json.smtp_check == true &&
+        password.length > 5 &&
+        username.length > 5
       ) {
+        $("#myModal").modal("hide");
         console.log(email);
         console.log(password);
+        console.log(password.length);
+        console.log(username);
+
+        var userData = {
+          email: email,
+          password: password,
+          savedRecipes: [],
+          dateAdded: firebase.database.ServerValue.TIMESTAMP
+        };
+
+        //push user's email to firebase
+        database.ref("users/" + username).set(userData);
         // $(location).attr('href', 'https://luberchris.github.io/project1/index.html');
       }
       // otherwise print error message to the dom
       else {
         $("#email-invalid").empty();
-        $("#email-invalid").text("Invalid email address, please enter again");
-      }
-
-      // Initialize Firebase
-      var config = {
-        apiKey: "AIzaSyDMQKoXzxho2wVMf6eGMQRctvUAuo5I31A",
-        authDomain: "socialpantry-29e0d.firebaseapp.com",
-        databaseURL: "https://socialpantry-29e0d.firebaseio.com",
-        projectId: "socialpantry-29e0d",
-        storageBucket: "socialpantry-29e0d.appspot.com",
-        messagingSenderId: "329527149006"
-      };
-
-      firebase.initializeApp(config);
-      var userData = {
-        email: email,
-        password: password,
-        savedRecipes: [],
-        dateAdded: firebase.database.ServerValue.TIMESTAMP
-      };
-      //push user's email to firebase
-      database.ref().push(userData);
-    }
-  });
-});
-
-fetch("https://zestful-upenn-1.herokuapp.com/parseIngredients", {
-  method: "POST",
-  headers: {
-    Accept: "application/json",
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    ingredients: ingredientRaw
-  })
-}).then(function(response) {
-  // Check for successful response from Zestful server.
-  if (response.status !== 200) {
-    console.log("Error talking to Zestful server: " + response.status);
-    return;
-  }
-
-  // Process the response from Zestful.
-  response.json().then(function(data) {
-    // Check for application-level errors.
-    if (data.error) {
-      console.log(`Failed to process ingredients: ${data.error}`);
-      return;
-    }
-
-    // Iterate through each ingredient result.
-    data.results.forEach(function(result) {
-      // Check if Zestful processed this ingredient successfully.
-      if (result.error) {
-        console.log(
-          `Error processing ingredient ${result.ingredientRaw}: ${result.error}`
+        $("#email-invalid").text(
+          "Invalid email and/or too short of a password , please enter again"
         );
-        return;
       }
 
-      // TODO: Handle ingredient result
-      console.log(result.ingredientParsed);
-    });
+      //database.ref('users/' + username).update(updates);
+
+      //var updates = {
+      // savedRecipes: ["cheese", "onions", "bacon"]
+      //  }
+
+      database
+        .ref("users/" + "woatthbewruoigtuso")
+        .once("value")
+        .then(function(snapshot) {
+          console.log(snapshot.val().email);
+          console.log(snapshot.val().savedRecipes);
+        });
+    }
   });
 });
 
