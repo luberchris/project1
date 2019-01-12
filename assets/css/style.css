@@ -4,3 +4,7 @@ a{
 a:hover{
     color: red;
 }
+
+#recipeButton{
+    margin-right: 5px;
+}

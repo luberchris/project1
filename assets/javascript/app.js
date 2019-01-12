@@ -14,9 +14,6 @@ var favoriteRecipe = "";
 
 var database = firebase.database();
 
-function addToFavorites(element) {
-  console.log(element.id);
-}
 
 function hash(s) {
   /* Simple hash function. */
@@ -174,7 +171,133 @@ $(document).on("click", "#submitButton", function() {
       });
     }
   });
-});
+})
+
+$(document).on("click", "#recipeButton", function() {
+  event.preventDefault();
+
+  //clear dom for new search results
+
+  $("#ingredHere").html("");
+
+    //initial ajax call to get search results
+
+    database
+  .ref("users/" + username)
+  .once("value")
+  .then(function(snapshot) {
+    savedRecipes = snapshot.val().savedRecipes;
+    console.log(savedRecipes);
+    console.log(savedRecipes[1]);
+   
+
+    for (var i = 1; i < savedRecipes.length; i++) {
+      var recipeKey = savedRecipes[i];
+      console.log(recipeKey);
+      // recipeIndex = hash(recipeKey);
+
+      //secondary api URL that returns individual recipe results using recipe key as identifier
+
+      var idURL =
+        "https://api.yummly.com/v1/api/recipe/" +
+        recipeKey.trim() +
+        "?_app_id=30ea9a46&_app_key=3d03668731b2112fff8aac21cb03c4ca";
+
+      //secondary AJAX call to return the individual results
+      $.ajax({
+        url: idURL,
+        method: "GET"
+      }).then(function(result) {
+        //variables assigning JSON elements from API call
+
+        var resultImgs = result.images[0].hostedMediumUrl;
+        var recipeURL = result.source.sourceRecipeUrl;
+        var recipeName = result.name;
+        var ingredientsRaw = result.ingredientLines;
+
+        //variables to build recipe cards
+        var recipeLink = $("<a href='" + recipeURL + "' target='_blank'>");
+        var card = $("<div class='card border-danger bg-light pt-4'>");
+        var cardBody = $("<div class ='card-body'>");
+        var cardTitle = $("<h4 class='card-title'></h4>");
+        var cardText = $("<p class='card-text'></p>");
+        var cardTextSmall = $("<small class='text-muted'></small>");
+        var ingredImg = $("<img class='card-image-top' alt='card Image Cap'>");
+        var favorite = $(
+          '<button class="btn btn-danger favoriteButton" id=" ' +
+            result.id +
+            '" onclick="addToFavorites(this)">♥</button>'
+        );
+
+        //add links to returned images
+        $(ingredImg).attr("src", resultImgs);
+
+        //build cards to house results
+        recipeLink.append(ingredImg);
+        card.append(cardBody);
+        cardTitle.text(recipeName);
+        recipeLink.append("<hr>");
+        recipeLink.append(cardTitle);
+        cardBody.append(recipeLink);
+        cardBody.append(cardText);
+        cardText.append(cardTextSmall);
+        cardTextSmall.text(ingredientsRaw);
+        cardBody.append(favorite);
+
+        //add ingredients to DOM
+        $("#ingredHere").prepend(card);
+
+        fetch("https://zestful-upenn-1.herokuapp.com/parseIngredients", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            ingredients: ingredientsRaw
+          })
+        }).then(function(response) {
+          // Check for successful response from Zestful server.
+          if (response.status !== 200) {
+            console.log("Error talking to Zestful server: " + response.status);
+            return;
+          }
+
+          // Process the response from Zestful.
+          response.json().then(function(data) {
+            // Check for application-level errors.
+            if (data.error) {
+              console.log(`Failed to process ingredients: ${data.error}`);
+              return;
+            }
+
+            // Iterate through each ingredient result.
+            data.results.forEach(function(result) {
+              
+              // Check if Zestful processed this ingredient successfully.
+              if (result.error) {
+                console.log(
+                  `Error processing ingredient ${result.ingredientRaw}: ${
+                    result.error
+                  }`
+                );
+                return;
+              }
+
+              // if (result.ingredientParsed.product != null) {
+              //   // TODO: Handle ingredient result
+              //   console.log(result.ingredientParsed.product);
+              // }
+            });
+          });
+        });
+      });
+    }
+  });
+}
+
+
+);
 
 $(document).on("click", "#loginButton", function() {
   console.log("login clicked");
@@ -281,7 +404,13 @@ $(document).on("click", ".favoriteButton", function() {
   }
   );
 
- 
+ //
+ var yummlyURL =
+    "https://api.yummly.com/v1/api/recipe/" +
+    this.id.trim() +
+    "?_app_id=30ea9a46&_app_key=3d03668731b2112fff8aac21cb03c4ca";
+
+
   console.log("Favorited: " + this.id);
 
   
