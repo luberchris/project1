@@ -9,12 +9,20 @@ var config = {
 };
 
 firebase.initializeApp(config);
-var username = "";
-var favoriteRecipe = "";
+
+if (typeof localStorage.getItem('pantryUniqueUsername') !== undefined){
+  var username = localStorage.getItem('pantryUniqueUsername');
+  $("#loginButton").text(username + " | Change User");
+}
+else {
+  var username = "";
+}
+
+var shoppinglist = ["Here is your shopping list!"];
+
 var savedRecipes = ["Here are your recipes!"];
 
 var database = firebase.database();
-
 
 function hash(s) {
   /* Simple hash function. */
@@ -36,6 +44,7 @@ function hash(s) {
   return String(a);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////
 //on click to perform the initial receipe search
 $(document).on("click", "#submitButton", function() {
   event.preventDefault();
@@ -104,7 +113,7 @@ $(document).on("click", "#submitButton", function() {
         var favorite = $(
           '<button class="btn btn-danger favoriteButton" id=" ' +
             result.id +
-            '" onclick="addToFavorites(this)">♥</button>'
+            '">♥</button>'
         );
 
         //add links to returned images
@@ -151,7 +160,6 @@ $(document).on("click", "#submitButton", function() {
 
             // Iterate through each ingredient result.
             data.results.forEach(function(result) {
-              
               // Check if Zestful processed this ingredient successfully.
               if (result.error) {
                 console.log(
@@ -161,19 +169,15 @@ $(document).on("click", "#submitButton", function() {
                 );
                 return;
               }
-
-              // if (result.ingredientParsed.product != null) {
-              //   // TODO: Handle ingredient result
-              //   console.log(result.ingredientParsed.product);
-              // }
             });
           });
         });
       });
     }
   });
-})
+});
 
+////////////////////////////////////////////////////////////////////////////////////////
 $(document).on("click", "#recipeButton", function() {
   event.preventDefault();
 
@@ -181,125 +185,119 @@ $(document).on("click", "#recipeButton", function() {
 
   $("#ingredHere").html("");
 
-    //initial ajax call to get search results
+  //initial ajax call to get search results
 
-    database
-  .ref("users/" + username)
-  .once("value")
-  .then(function(snapshot) {
-    savedRecipes = snapshot.val().savedRecipes;
-    console.log(savedRecipes);
-    console.log(savedRecipes[1]);
-   
+  database
+    .ref("users/" + username)
+    .once("value")
+    .then(function(snapshot) {
+      savedRecipes = snapshot.val().savedRecipes;
+      // console.log(savedRecipes);
+      // console.log(savedRecipes[1]);
 
-    for (var i = 1; i < savedRecipes.length; i++) {
-      var recipeKey = savedRecipes[i];
-      console.log(recipeKey);
-      // recipeIndex = hash(recipeKey);
+      for (var i = 1; i < savedRecipes.length; i++) {
+        var recipeKey = savedRecipes[i];
+        console.log(recipeKey);
 
-      //secondary api URL that returns individual recipe results using recipe key as identifier
+        //secondary api URL that returns individual recipe results using recipe key as identifier
 
-      var idURL =
-        "https://api.yummly.com/v1/api/recipe/" +
-        recipeKey.trim() +
-        "?_app_id=30ea9a46&_app_key=3d03668731b2112fff8aac21cb03c4ca";
+        var idURL =
+          "https://api.yummly.com/v1/api/recipe/" +
+          recipeKey.trim() +
+          "?_app_id=30ea9a46&_app_key=3d03668731b2112fff8aac21cb03c4ca";
 
-      //secondary AJAX call to return the individual results
-      $.ajax({
-        url: idURL,
-        method: "GET"
-      }).then(function(result) {
-        //variables assigning JSON elements from API call
+        //secondary AJAX call to return the individual results
+        $.ajax({
+          url: idURL,
+          method: "GET"
+        }).then(function(result) {
+          //variables assigning JSON elements from API call
 
-        var resultImgs = result.images[0].hostedMediumUrl;
-        var recipeURL = result.source.sourceRecipeUrl;
-        var recipeName = result.name;
-        var ingredientsRaw = result.ingredientLines;
+          var resultImgs = result.images[0].hostedMediumUrl;
+          var recipeURL = result.source.sourceRecipeUrl;
+          var recipeName = result.name;
+          var ingredientsRaw = result.ingredientLines;
 
-        //variables to build recipe cards
-        var recipeLink = $("<a href='" + recipeURL + "' target='_blank'>");
-        var card = $("<div class='card border-danger bg-light pt-4'>");
-        var cardBody = $("<div class ='card-body'>");
-        var cardTitle = $("<h4 class='card-title'></h4>");
-        var cardText = $("<p class='card-text'></p>");
-        var cardTextSmall = $("<small class='text-muted'></small>");
-        var ingredImg = $("<img class='card-image-top' alt='card Image Cap'>");
-        var favorite = $(
-          '<button class="btn btn-danger favoriteButton" id=" ' +
-            result.id +
-            '" onclick="addToFavorites(this)">♥</button>'
-        );
+          //variables to build recipe cards
+          var recipeLink = $("<a href='" + recipeURL + "' target='_blank'>");
+          var card = $("<div class='card border-danger bg-light pt-4' id='"+result.id.trim()+"card'>");
+          var cardBody = $("<div class ='card-body'>");
+          var cardTitle = $("<h4 class='card-title'></h4>");
+          var cardText = $("<p class='card-text'></p>");
+          var cardTextSmall = $("<small class='text-muted'></small>");
+          var ingredImg = $(
+            "<img class='card-image-top' alt='card Image Cap'>"
+          );
+          var favorite = $(
+            '<button class="btn btn-muted removeFavorite" id=" ' +
+              result.id +
+              '">✕</button>'
+          );
 
-        //add links to returned images
-        $(ingredImg).attr("src", resultImgs);
+          //add links to returned images
+          $(ingredImg).attr("src", resultImgs);
 
-        //build cards to house results
-        recipeLink.append(ingredImg);
-        card.append(cardBody);
-        cardTitle.text(recipeName);
-        recipeLink.append("<hr>");
-        recipeLink.append(cardTitle);
-        cardBody.append(recipeLink);
-        cardBody.append(cardText);
-        cardText.append(cardTextSmall);
-        cardTextSmall.text(ingredientsRaw);
-        cardBody.append(favorite);
+          //build cards to house results
+          recipeLink.append(ingredImg);
+          card.append(cardBody);
+          cardTitle.text(recipeName);
+          recipeLink.append("<hr>");
+          recipeLink.append(cardTitle);
+          cardBody.append(recipeLink);
+          cardBody.append(cardText);
+          cardText.append(cardTextSmall);
+          cardTextSmall.text(ingredientsRaw);
+          cardBody.append(favorite);
 
-        //add ingredients to DOM
-        $("#ingredHere").prepend(card);
+          //add ingredients to DOM
+          $("#ingredHere").prepend(card);
 
-        fetch("https://zestful-upenn-1.herokuapp.com/parseIngredients", {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            ingredients: ingredientsRaw
-          })
-        }).then(function(response) {
-          // Check for successful response from Zestful server.
-          if (response.status !== 200) {
-            console.log("Error talking to Zestful server: " + response.status);
-            return;
-          }
-
-          // Process the response from Zestful.
-          response.json().then(function(data) {
-            // Check for application-level errors.
-            if (data.error) {
-              console.log(`Failed to process ingredients: ${data.error}`);
+          fetch("https://zestful-upenn-1.herokuapp.com/parseIngredients", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              ingredients: ingredientsRaw
+            })
+          }).then(function(response) {
+            // Check for successful response from Zestful server.
+            if (response.status !== 200) {
+              console.log(
+                "Error talking to Zestful server: " + response.status
+              );
               return;
             }
 
-            // Iterate through each ingredient result.
-            data.results.forEach(function(result) {
-              
-              // Check if Zestful processed this ingredient successfully.
-              if (result.error) {
-                console.log(
-                  `Error processing ingredient ${result.ingredientRaw}: ${
-                    result.error
-                  }`
-                );
+            // Process the response from Zestful.
+            response.json().then(function(data) {
+              // Check for application-level errors.
+              if (data.error) {
+                console.log(`Failed to process ingredients: ${data.error}`);
                 return;
               }
 
-              // if (result.ingredientParsed.product != null) {
-              //   // TODO: Handle ingredient result
-              //   console.log(result.ingredientParsed.product);
-              // }
+              // Iterate through each ingredient result.
+              data.results.forEach(function(result) {
+                // Check if Zestful processed this ingredient successfully.
+                if (result.error) {
+                  console.log(
+                    `Error processing ingredient ${result.ingredientRaw}: ${
+                      result.error
+                    }`
+                  );
+                  return;
+                }
+              });
             });
           });
         });
-      });
-    }
-  });
-}
+      }
+    });
+});
 
-
-);
-
+////////////////////////////////////////////////////////////////////////////////////////
 $(document).on("click", "#loginButton", function() {
   console.log("login clicked");
   $("#myModal").modal("show");
@@ -332,9 +330,9 @@ $("#add-email").on("click", function(event) {
     dataType: "jsonp",
     success: function(json) {
       // Access and use your preferred validation result objects
-      console.log(json.format_valid);
-      console.log(json.smtp_check);
-      console.log(json.score);
+      // console.log(json.format_valid);
+      // console.log(json.smtp_check);
+      // console.log(json.score);
 
       // if email score is sufficient, we redirect user to our actual app homepage
       if (
@@ -345,27 +343,27 @@ $("#add-email").on("click", function(event) {
         username.length > 5
       ) {
         $("#myModal").modal("hide");
-        console.log(email);
-        console.log(password);
-        console.log(password.length);
-        console.log(username);
-        
-        database
-        .ref("users/" + username)
-         .once("value")
-        .then(function(snapshot) {
-        savedRecipes = snapshot.val().savedRecipes;
-        })
+        // console.log(email);
+        // console.log(password);
+        // console.log(password.length);
+        // console.log(username);
 
+        $("#loginButton").text(username + " | Change User");
+        database
+          .ref("users/" + username)
+          .once("value")
+          .then(function(snapshot) {
+            savedRecipes = snapshot.val().savedRecipes;
+          });
 
         var userData = {
           email: email,
           password: password,
           savedRecipes: savedRecipes,
+          shoppinglist : shoppinglist,
           dateAdded: firebase.database.ServerValue.TIMESTAMP
         };
 
-        savedRecipes.push(favoriteRecipe);
         console.log(savedRecipes);
 
         //push user's email to firebase
@@ -380,11 +378,8 @@ $("#add-email").on("click", function(event) {
         );
       }
 
-      //database.ref('users/' + username).update(updates);
-
-      //var updates = {
-      // savedRecipes: ["cheese", "onions", "bacon"]
-      //  }
+      // Continue session
+      localStorage.setItem("pantryUniqueUsername", username);
 
       database
         .ref("users/" + "woatthbewruoigtuso")
@@ -397,35 +392,28 @@ $("#add-email").on("click", function(event) {
   });
 });
 
-var shoppinglist = [];
+////////////////////////////////////////////////////////////////////////////////////////
 
 $(document).on("click", ".favoriteButton", function() {
   event.preventDefault();
   favoriteRecipe = this.id;
-  console.log(favoriteRecipe);
+  favoriteHash = hash(this.id).toString();
   database
-  .ref("users/" + username)
-  .once("value")
-  .then(function(snapshot) {
-    savedRecipes = snapshot.val().savedRecipes;
-    savedRecipes.push(favoriteRecipe);
-    console.log(savedRecipes);
-   
-    database.ref("users/" + username+"/savedRecipes").set(savedRecipes);
+    .ref("users/" + username)
+    .once("value")
+    .then(function(snapshot) {
+      savedRecipes = snapshot.val().savedRecipes;
+      savedRecipes.push(favoriteRecipe);
+      database.ref("users/" + username + "/savedRecipes").set(savedRecipes);
+    });
 
-  }
-  );
-
- //
- var yummlyURL =
+  //
+  var yummlyURL =
     "https://api.yummly.com/v1/api/recipe/" +
     this.id.trim() +
     "?_app_id=30ea9a46&_app_key=3d03668731b2112fff8aac21cb03c4ca";
 
-
   console.log("Favorited: " + this.id);
-
-  
 
   var yummlyURL =
     "https://api.yummly.com/v1/api/recipe/" +
@@ -487,8 +475,48 @@ $(document).on("click", ".favoriteButton", function() {
               shoppinglist.push(result.ingredientParsed.product.toLowerCase());
             }
           }
+
+          
         });
       });
     });
   });
+});
+
+////////////////////////////////////////////////////////////////////////////////////////
+$(document).on("click", ".removeFavorite", function() {
+  event.preventDefault();
+  thisCard = this.id;
+  $("#"+thisCard.trim()+"card").remove();
+  database
+    .ref("users/" + username)
+    .once("value")
+    .then(function(snapshot) {
+      savedRecipes = snapshot.val().savedRecipes;
+      console.log(savedRecipes);
+      var index = savedRecipes.indexOf(thisCard);
+      if (index > -1){
+        savedRecipes.splice(index, 1);
+      }
+      snapshot.ref.update({savedRecipes : savedRecipes});
+    });
+});
+
+//////////////////////////////////////////////////////////////////////////////////////
+$(document).on("click", "#listButton", function() {
+  shoppingListDiv = $("<div class='text-left' id='shoppinglist'>");
+  for (var i=1; i < shoppinglist.length; i++){
+    itemDiv = $("<div class='form-check'>");
+    button = $("<input class='form-check-input' type='checkbox'>");
+    item = $("<label class='form-check-label'>");
+
+    item.text(shoppinglist[i]);
+
+    itemDiv.append(button);
+    itemDiv.append(item);
+
+    shoppingListDiv.append(itemDiv);
+  }
+
+  $("#ingredHere").html(shoppingListDiv);
 });

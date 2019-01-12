@@ -31,3 +31,18 @@ DOM elements and on.click methods added, functionality begun
 Link redirect to home webpage *rather* than Yummly
 CSS refined
 Email verification API (JSON) researched, implementation begun
+
+#### 10 January, 2019
+Meeting #1
+
+Refined and fixed search elements
+Email verification API fully functional
+Pieces removed and altered, bugs created
+
+#### 11 January, 2019
+Backend Work
+
+Backend refined, nearly perfected
+Session capability created
+Favorites removal created
+Shopping list implemented
