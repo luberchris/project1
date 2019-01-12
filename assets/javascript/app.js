@@ -217,19 +217,24 @@ $(document).on("click", "#loginButton", function() {
           console.log(password);
           console.log(password.length);
           console.log(username);
-          hideModal();
+          // hideModal();
  
-       var userData = {
-         email: email,
-         password: password,
-         savedRecipes: [],
-         dateAdded: firebase.database.ServerValue.TIMESTAMP,
-       }
-       
-     //push user's email to firebase
-      database.ref('users/' + username).set(userData);
-           // $(location).attr('href', 'https://luberchris.github.io/project1/index.html');
-        }
+          if(hash(username) !== null && hash(email) !== null && hash(password) !== null) {
+              var userData = {
+                email: email,
+                password: password,
+                savedRecipes: [],
+                dateAdded: firebase.database.ServerValue.TIMESTAMP,
+              } 
+              
+              //push user's email to firebase
+              database.ref('users/' + username).set(userData);
+                  // $(location).attr('href', 'https://luberchris.github.io/project1/index.html');
+            } else if(hash(email) === null && (hash(username) !== null || hash(password) !== null)) {
+                console.log(password)
+                $("#email-invalid").text("Username or Password not recognized, please enter again");
+            }
+          }
         // otherwise print error message to the dom
         else {
             $("#email-invalid").empty();
