@@ -1,4 +1,3 @@
-
 // Initialize firebase
 var config = {
   apiKey: "AIzaSyDMQKoXzxho2wVMf6eGMQRctvUAuo5I31A",
@@ -7,9 +6,11 @@ var config = {
   projectId: "socialpantry-29e0d",
   storageBucket: "socialpantry-29e0d.appspot.com",
   messagingSenderId: "329527149006"
- };
+};
 
 firebase.initializeApp(config);
+var username = "";
+var favoriteRecipe = "";
 
 var database = firebase.database();
 
@@ -37,11 +38,9 @@ function hash(s) {
   return String(a);
 }
 
-
-//on click to perform the initial receipe search 
+//on click to perform the initial receipe search
 $(document).on("click", "#submitButton", function() {
   event.preventDefault();
-
 
   //clear dom for new search results
 
@@ -63,7 +62,6 @@ $(document).on("click", "#submitButton", function() {
 
   console.log(queryURL);
 
-
   //initial ajax call to get search results
 
   $.ajax({
@@ -72,8 +70,7 @@ $(document).on("click", "#submitButton", function() {
   }).then(function(response) {
     console.log(response);
 
-
-    //loop that iterates over responses to add recipe IDs as an attribute 
+    //loop that iterates over responses to add recipe IDs as an attribute
 
     for (var i = 0; i < response.matches.length; i++) {
       var recipeKey = response.matches[i].id;
@@ -86,22 +83,17 @@ $(document).on("click", "#submitButton", function() {
         recipeKey +
         "?_app_id=30ea9a46&_app_key=3d03668731b2112fff8aac21cb03c4ca";
 
-
-      //secondary AJAX call to return the individual results 
+      //secondary AJAX call to return the individual results
       $.ajax({
         url: idURL,
         method: "GET"
       }).then(function(result) {
-
-        
-
         //variables assigning JSON elements from API call
 
         var resultImgs = result.images[0].hostedMediumUrl;
         var recipeURL = result.source.sourceRecipeUrl;
         var recipeName = result.name;
         var ingredientsRaw = result.ingredientLines;
-
 
         //variables to build recipe cards
         var recipeLink = $("<a href='" + recipeURL + "' target='_blank'>");
@@ -111,7 +103,11 @@ $(document).on("click", "#submitButton", function() {
         var cardText = $("<p class='card-text'></p>");
         var cardTextSmall = $("<small class='text-muted'></small>");
         var ingredImg = $("<img class='card-image-top' alt='card Image Cap'>");
-        var favorite = $('<button class="btn btn-danger" id=" '+ result.id +'" onclick="addToFavorites(this)">♥</button>')
+        var favorite = $(
+          '<button class="btn btn-danger favoriteButton" id=" ' +
+            result.id +
+            '" onclick="addToFavorites(this)">♥</button>'
+        );
 
         //add links to returned images
         $(ingredImg).attr("src", resultImgs);
@@ -128,8 +124,7 @@ $(document).on("click", "#submitButton", function() {
         cardTextSmall.text(ingredientsRaw);
         cardBody.append(favorite);
 
-    
-        //add ingredients to DOM 
+        //add ingredients to DOM
         $("#ingredHere").prepend(card);
 
         fetch("https://zestful-upenn-1.herokuapp.com/parseIngredients", {
@@ -158,6 +153,7 @@ $(document).on("click", "#submitButton", function() {
 
             // Iterate through each ingredient result.
             data.results.forEach(function(result) {
+              
               // Check if Zestful processed this ingredient successfully.
               if (result.error) {
                 console.log(
@@ -177,17 +173,15 @@ $(document).on("click", "#submitButton", function() {
         });
       });
     }
-
   });
-
-
 });
 
 $(document).on("click", "#loginButton", function() {
   console.log("login clicked");
-  $('#myModal').modal('show')
-//document.modal.style.display='block';
+  $("#myModal").modal("show");
+  //document.modal.style.display='block';
 });
+<<<<<<< HEAD
       var access_key = '6b78fa23cc5f74ceb6bd5d5b42e5a455';
       var email = '';
 
@@ -242,31 +236,117 @@ $(document).on("click", "#loginButton", function() {
         }
   
        //database.ref('users/' + username).update(updates);
+=======
+var access_key = "6b78fa23cc5f74ceb6bd5d5b42e5a455";
+var email = "";
+>>>>>>> origin
+
+// This function handles events where one button is clicked
+$("#add-email").on("click", function(event) {
+  // Preventing the buttons default behavior when clicked (which is submitting a form)
+  event.preventDefault();
+  // This line grabs the input from the textbox
+  var email = $("#email-input")
+    .val()
+    .trim();
+  var password = $("#password-input")
+    .val()
+    .trim();
+  username = $("#username-input")
+    .val()
+    .trim();
+  // verify email address via AJAX call
+  $.ajax({
+    url:
+      "http://apilayer.net/api/check?access_key=" +
+      access_key +
+      "&email=" +
+      email,
+    dataType: "jsonp",
+    success: function(json) {
+      // Access and use your preferred validation result objects
+      console.log(json.format_valid);
+      console.log(json.smtp_check);
+      console.log(json.score);
+
+      // if email score is sufficient, we redirect user to our actual app homepage
+      if (
+        json.score > 0.7 &&
+        json.format_valid == true &&
+        json.smtp_check == true &&
+        password.length > 5 &&
+        username.length > 5
+      ) {
+        $("#myModal").modal("hide");
+        console.log(email);
+        console.log(password);
+        console.log(password.length);
+        console.log(username);
+
+        var userData = {
+          email: email,
+          password: password,
+          savedRecipes: ["Here are your recipes"],
+          dateAdded: firebase.database.ServerValue.TIMESTAMP
+        };
+
+        //push user's email to firebase
+        database.ref("users/" + username).set(userData);
+        // $(location).attr('href', 'https://luberchris.github.io/project1/index.html');
+      }
+      // otherwise print error message to the dom
+      else {
+        $("#email-invalid").empty();
+        $("#email-invalid").text(
+          "Invalid email and/or too short of a password , please enter again"
+        );
+      }
+
+      //database.ref('users/' + username).update(updates);
 
       //var updates = {
-         // savedRecipes: ["cheese", "onions", "bacon"]
+      // savedRecipes: ["cheese", "onions", "bacon"]
       //  }
 
-       database.ref('users/' + "woatthbewruoigtuso").once('value').then(function(snapshot){
-        console.log(snapshot.val().email);
-        console.log(snapshot.val().savedRecipes);
-      })
-     }
-    
-   })
-
-
+      database
+        .ref("users/" + "woatthbewruoigtuso")
+        .once("value")
+        .then(function(snapshot) {
+          console.log(snapshot.val().email);
+          console.log(snapshot.val().savedRecipes);
+        });
+    }
+  });
 });
 
-
+var shoppinglist = [];
 
 $(document).on("click", ".favoriteButton", function() {
   event.preventDefault();
+  favoriteRecipe = this.id;
+  console.log(favoriteRecipe);
+  database
+  .ref("users/" + username)
+  .once("value")
+  .then(function(snapshot) {
+    savedRecipes = snapshot.val().savedRecipes;
+    savedRecipes.push(favoriteRecipe);
+    console.log(savedRecipes);
+   
+    database.ref("users/" + username+"/savedRecipes").set(savedRecipes);
+
+  }
+  );
+
+ 
   console.log("Favorited: " + this.id);
 
-  var yummlyURL = "https://api.yummly.com/v1/api/recipe/" +
+  
+
+  var yummlyURL =
+    "https://api.yummly.com/v1/api/recipe/" +
     this.id.trim() +
-    "?_app_id=30ea9a46&_app_key=3d03668731b2112fff8aac21cb03c4ca"
+    "?_app_id=30ea9a46&_app_key=3d03668731b2112fff8aac21cb03c4ca";
 
   $.ajax({
     url: yummlyURL,
@@ -312,11 +392,19 @@ $(document).on("click", ".favoriteButton", function() {
 
           if (result.ingredientParsed.product != null) {
             // TODO: Handle ingredient result
-            console.log(total + ": " + result.ingredientParsed.product.toLowerCase());
+            console.log(
+              total + ": " + result.ingredientParsed.product.toLowerCase()
+            );
+            if (
+              !shoppinglist.includes(
+                result.ingredientParsed.product.toLowerCase()
+              )
+            ) {
+              shoppinglist.push(result.ingredientParsed.product.toLowerCase());
+            }
           }
         });
       });
     });
   });
 });
-
